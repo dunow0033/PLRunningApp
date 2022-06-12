@@ -12,12 +12,12 @@ import androidx.navigation.findNavController
 import com.example.plrunningapp.R
 import com.example.plrunningapp.databinding.ActivityMainBinding
 import com.example.plrunningapp.db.RunDao
-import com.example.plrunningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
+//import com.example.plrunningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -28,14 +28,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navView: BottomNavigationView = binding.bottomNavigationView
-        navController = findNavController(R.id.nav_graph)
+        setSupportActionBar(binding.toolbar)
 
-        setSupportActionBar(toolbar)
+        binding.bottomNavigationView.setupWithNavController(findNavController(R.id.navHostFragment))
 
-
-        navView.setupWithNavController(navController)
-
-        navHostFragment
+        findNavController(R.id.navHostFragment)
+            .addOnDestinationChangedListener { _, destination, _ ->
+                when(destination.id) {
+                    R.id.settingsFragment, R.id.runFragment, R.id.statisticsFragment ->
+                        binding.bottomNavigationView.visibility = View.VISIBLE
+                    else -> binding.bottomNavigationView.visibility = View.GONE
+                }
+            }
     }
 }
